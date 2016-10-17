@@ -3,8 +3,8 @@
 const scan = require('./scan');
 const pricing = require('./pricing');
 
-function currentMonthAllRegions () {
-  return pricing.fetch()
+function currentMonthAllRegions (params) {
+  return pricing.fetch(params)
     .then(fetchInstancesWithPrice);
 }
 

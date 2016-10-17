@@ -20,24 +20,24 @@ function mapRegions (regions) {
   return regions.map(region => region.RegionName);
 }
 
-function fetchInstancesForAllRegions () {
+function fetchInstancesForAllRegions (params) {
   return fetchRegions()
-    .then(fetchInstancesForEachRegion);
+    .then(fetchInstancesForEachRegion.bind(null, params));
 }
 
-function fetchInstancesForEachRegion (regions) {
-  return Promise.all(regions.map(region => fetchInstancesByRegion(region)))
+function fetchInstancesForEachRegion (params, regions) {
+  return Promise.all(regions.map(region => fetchInstancesByRegion(params, region)))
     .then(instances => {
       return addRegionToInstances(regions, instances);
     });
 }
 
-function fetchInstancesByRegion (region) {
+function fetchInstancesByRegion (params, region) {
   AWS.config.region = region;
   const ec2 = new AWS.EC2();
 
   return new Promise((resolve, reject) => {
-    ec2.describeInstances({ MaxResults: 500 }, (err, data) => {
+    ec2.describeInstances(Object.assign(params || {}, { MaxResults: 500 }), (err, data) => {
       if (err) {
         return reject(err);
       }
